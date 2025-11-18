@@ -181,3 +181,74 @@ def get_color(value):#fonction qui change la couleur de la courbe en fonction de
 
 colors=[get_color(val) for val in [moyenne1, moyenne2, moyenne3]]
 plt.bar(["ue1", "ue2", "ue3"], [moyenne1, moyenne2, moyenne3], color=colors)
+
+fenetre = tk.Tk()
+fenetre.title("Affichage des coefficients")
+fenetre.geometry("740x580")
+
+# Création d'un Frame pour placer les labels
+frm = ttk.Frame(fenetre)
+frm.grid()
+
+# Dictionnaire pour stocker les zones d'entrée par matière
+note_matiere = {}
+
+        
+
+# Création des labels et zones de saisie
+for i, element in enumerate(coef_ue1.keys()):
+    matiere = ttk.Label(frm, text=element)
+    matiere.grid(column=0, row=i)
+
+    zone1 = ttk.Entry(frm)
+    zone1.grid(column=1, row=i)
+
+    note_matiere[element] = zone1  
+
+image_label = tk.Label(fenetre)
+image_label.grid(row=0, column=1, padx=20, pady=10)
+
+
+def valider():
+    for matiere, zone1 in note_matiere.items():
+        notes[matiere] = float(zone1.get())
+
+
+    # Calcul des moyennes
+    list_value = (
+        moyenne_ue(coef_ue1, "UE1"),
+        moyenne_ue(coef_ue2, "UE2"),
+        moyenne_ue(coef_ue3, "UE3")
+    )
+
+    print("Moyennes :", list_value)
+
+     # Affichage du graphique dans Tkinter
+    img = Image.open("graph.png")
+    img = img.resize((500, 400))
+    photo = ImageTk.PhotoImage(img)
+    image_label.configure(image=photo)
+    image_label.image = photo  # Important pour éviter le garbage collector
+
+        
+    fig, ax = plt.subplots()
+    UE = ['UE1', 'UE2', 'UE3']
+    counts = list_value
+    bar_colors = get_colors(counts)
+    ax.bar(UE, counts, color=bar_colors)
+    ax.set_ylabel('notes')
+    ax.set_title('valide ou pas')
+    ax.set_ylim(0, 20)
+    plt.show()
+
+
+fig.savefig("graph.png")
+plt.close(fig)
+
+bouton1 = tk.Button(frm, text="Valider", command=valider)
+bouton1.grid(column=0, row=len(coef_ue1)+1, columnspan=2, pady=10)
+
+
+
+
+fenetre.mainloop()
